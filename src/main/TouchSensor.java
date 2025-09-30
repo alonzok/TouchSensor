@@ -1,33 +1,39 @@
 package main;
-
+//Se importan las librerías para la comunicación de la base de datos.
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 
+//Se importan las librerías de Phidgets.
 import com.phidget22.PhidgetException;
 import com.phidget22.VoltageInput;
 import com.phidget22.VoltageInputVoltageChangeEvent;
 
 public class TouchSensor {
 
+	//Clase main para empezar la ejecución
 	public static void main(String args[]) {
+		//Se define la variable de conexión de la base de datos.
 		Connection conn;
 		try {
+			//Se define la liga de la base de datos y se crea la conexión a la base de datos utilizando usuario y contraseña. Es una muy mala práctica de seguridad, ya que
+			//cualquiera puede visualizar el usuario y contraseña al tener el código.
 			String url = "jdbc:mysql://localhost:3306/sensor";
 			conn = DriverManager.getConnection(url, "root", "secret");
 
 			while (true) {
 				try {
+					// Se crea la varialbe de lectura de voltaje.
 					VoltageInput voltageInput0 = new VoltageInput();
-					// Se agrega el listener para el cambio de voltaje
+					// Se agrega el listener para el cambio de voltaje.
 					voltageInput0.addVoltageChangeListener((VoltageInputVoltageChangeEvent e) -> {
 						System.out.println("Voltaje: " + e.getVoltage());
 						if (e.getVoltage() == 0) {
 							try {
 
-								// Se crea el objeto statement.
+								// Se crea el objeto statement para la lectura de la base de datos.
 								Statement stmt = conn.createStatement();
 								ResultSet rs;
 								String item = "1";
@@ -46,6 +52,7 @@ public class TouchSensor {
 										+ (Integer.parseInt(item) + 1) + " WHERE id = 1";
 								stmt.executeUpdate(statementString);
 
+								//En caso de tener cualquier excepción, imprimir la excepción.
 							} catch (Exception ex) {
 								System.err.println(ex);
 							}
